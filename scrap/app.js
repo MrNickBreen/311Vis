@@ -8,11 +8,14 @@ var start = function(){
 	loadData().then(function(data){
 		console.log("drs2 ", data);
 		// TODONICK: split data into two arrays. 'first half and second half'
+		recentWindow = data;
+		oldWindow = data;
 		// recentWindow is today to today-ANALYSIS_WINDOW_IN_DAYS  and oldWindow = today-ANALYSIS_WINDOW_IN_DAYS  to today-2*ANALYSIS_WINDOW_IN_DAYS 
 		//DONT DISTRUCT PARAMS PASSED INTO AGGREGATE FUNCTIONS.
 		// TODO: DAVID
-		//aggregatedRecentWindow = aggregatedData(recentWindow);
-		//aggregatedOldWindow = aggregatedData(oldWindow);
+		aggregatedRecentWindow = aggregateData(recentWindow);
+		aggregatedOldWindow = aggregateData(oldWindow);
+		console.log('aggregatedOldWindow', aggregatedOldWindow);
 		// TODO: comparisonList = compareWindows(aggregatedOldWindow, aggregatedRecentWindow);
 		// compare return must already be sorted.
 		// comparisonList = [{agency: "blah ", change: 0.45, newValue: 12},...]
@@ -43,13 +46,31 @@ var loadData = function(){
 
 // Aggregate data to the responsible agency.
 // TODO3: instead of always doing responsible agency, make aggregateable key a param.
-var aggregateData = function(data) {
+var aggregateData = function(data, timeWindow) {
+	var STATUS_CLOSED = "Closed";
+	// format: {"agency Name blah": {responsible_agency: "blah", newlyOpened:123, closed:456}}
 	var aggregatedData = {};
 
 	data.forEach(function(d){
-		aggregatedData
+		var agency = d.responsible_agency;
+		// first time we see this agency
+		if(!aggregatedData[agency]){
+			aggregatedData[agency] = {responsible_agency: agency, newlyOpened: 0, closed: 0};
+		}
+		if (d.status === STATUS_CLOSED) {
+			aggregatedData[agency].closed++;
+		}
+		//if (moment.isIn(d.opened ,timeWindow)){ // TODO: use moment to check if it isInNowWindow
+			d.newlyOpened++;
+//		}
 	});
+
+	return aggregatedData;
 }
+
+
+
+// ===== nick write below here
 
 
 
