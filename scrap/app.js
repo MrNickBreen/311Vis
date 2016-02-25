@@ -1,17 +1,36 @@
-var ANALYSIS_WINDOW_IN_DAYS = 1;
+var ANALYSIS_WINDOW_IN_DAYS = 6,
+    todaysDate = moment().startOf('day').format('YYYY-MM-DD'),
+    begginingOfAnalysisWindow = moment().startOf('day').subtract((ANALYSIS_WINDOW_IN_DAYS*2)-1, 'days').format('YYYY-MM-DD'),
+
+    oldWindow = { 'start': begginingOfAnalysisWindow,
+        'end': moment(begginingOfAnalysisWindow).add(ANALYSIS_WINDOW_IN_DAYS, 'd').format('YYYY-MM-DD'),
+        'data': []
+    },
+    recentWindow = { 'start': moment(oldWindow.end).add('1', 'd').format('YYYY-MM-DD'),
+        'end': todaysDate,
+        'data': []
+    };
 
 // Entry point to the entire app.
 var start = function(){
 	loadData().then(function(data){
 		console.log("drs2 ", data);
-		// TODONICK: split data into two arrays. 'first half and second half'
-		recentWindow = data;
-		oldWindow = data;
-		// recentWindow is today to today-ANALYSIS_WINDOW_IN_DAYS  and oldWindow = today-ANALYSIS_WINDOW_IN_DAYS  to today-2*ANALYSIS_WINDOW_IN_DAYS
-		//DONT DISTRUCT PARAMS PASSED INTO AGGREGATE FUNCTIONS.
+        // NOTE: split data into two arrays, an event can be opened in oldWindow
+		// and closed in recentWindow
+        $.map(data, function( entry, i ) {
+          if (moment(entry.opened).isBefore(recentWindow.start) ||
+            moment(entry.closed).isBefore(recentWindow.start)) {
+              oldWindow.data.push(entry);
+          } else {
+              recentWindow.data.push(entry);
+          }
+        })
+		// oldWindow = today-(2*ANALYSIS_WINDOW_IN_DAYS) to today-ANALYSIS_WINDOW_IN_DAYS
+		// recentWindow is today-ANALYSIS_WINDOW_IN_DAYS+1 to today
+		// NOTE: DONT DISTRUCT PARAMS PASSED INTO AGGREGATE FUNCTIONS.
 		// TODO: DAVID
-		aggregatedRecentWindow = aggregateData(recentWindow);
-		aggregatedOldWindow = aggregateData(oldWindow);
+		aggregatedRecentWindow = aggregateData(recentWindow.data);
+		aggregatedOldWindow = aggregateData(oldWindow.data);
 		console.log('aggregatedOldWindow', aggregatedOldWindow);
 		comparisonList = compareWindows(aggregatedRecentWindow, aggregatedOldWindow);
 		console.log(comparisonList);
@@ -29,10 +48,7 @@ var start = function(){
 	Socrata API docs: https://dev.socrata.com/consumers/getting-started.html
 */
 var loadData = function(){
-	var todaysMomentDate = moment().startOf('day'),
-        todaysDate = moment().startOf('day').format('YYYY-MM-DD'),
-        begginingOfAnalysisWindow = todaysMomentDate.subtract(ANALYSIS_WINDOW_IN_DAYS*2, 'days').format('YYYY-MM-DD'),
-        filters = "$where=(closed > \'"+begginingOfAnalysisWindow+"\' AND closed < \'"+todaysDate+"\') OR (opened > \'"+begginingOfAnalysisWindow+"\' AND opened < \'"+todaysDate+"\')";
+	var filters = "$where=(closed > \'"+begginingOfAnalysisWindow+"\' AND closed < \'"+todaysDate+"\') OR (opened > \'"+begginingOfAnalysisWindow+"\' AND opened < \'"+todaysDate+"\')";
 
 	return $.getJSON('https://data.sfgov.org/resource/vw6y-z8j6.json?$limit=500&'+filters, function(data){
 		console.log('data', data);
