@@ -113,6 +113,7 @@ var filterComparisonData = function(comparisonList){
 };
 
 var drawChart = function(comparisonList){
+    $('#leaderboard').html('');
 	comparisonList.forEach(function(agency){
         var isGood = agency.changeInCloseRate > 0,
             classColor = isGood ? 'good': 'bad';
