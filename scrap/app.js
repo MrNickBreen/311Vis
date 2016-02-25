@@ -1,9 +1,9 @@
-var ANALYSIS_WINDOW_IN_DAYS = 2,
+var ANALYSIS_WINDOW_IN_DAYS = 4,
     todaysDate = moment().startOf('day').format('YYYY-MM-DD'),
     begginingOfAnalysisWindow = moment().startOf('day').subtract((ANALYSIS_WINDOW_IN_DAYS*2)-1, 'days').format('YYYY-MM-DD'),
 
     oldWindow = { 'start': begginingOfAnalysisWindow,
-        'end': moment(begginingOfAnalysisWindow).add(ANALYSIS_WINDOW_IN_DAYS, 'd').format('YYYY-MM-DD'),
+        'end': moment(begginingOfAnalysisWindow).add(ANALYSIS_WINDOW_IN_DAYS-1, 'd').format('YYYY-MM-DD'),
         'data': []
     },
     recentWindow = { 'start': moment(oldWindow.end).add('1', 'd').format('YYYY-MM-DD'),
@@ -17,12 +17,18 @@ var start = function(){
 		console.log("drs2 ", data);
         // NOTE: split data into two arrays, an event can be opened in oldWindow
 		// and closed in recentWindow
-        $.map(data, function( entry, i ) {
-          if (moment(entry.opened).isBefore(recentWindow.start) ||
-            moment(entry.closed).isBefore(recentWindow.start)) {
-              oldWindow.data.push(entry);
+        $.each( data, function( i, entry ) {
+            var eventIsOpenedBetweenRecentStartAndEnd =
+                moment(entry.opened).isAfter(recentWindow.start) &&
+                moment(entry.opened).isBefore(recentWindow.end),
+                eventIsClosedBetweenRecentStartAndEnd =
+                moment(entry.closed).isAfter(recentWindow.start) &&
+                moment(entry.closed).isBefore(recentWindow.end);
+          if (eventIsOpenedBetweenRecentStartAndEnd ||
+            eventIsClosedBetweenRecentStartAndEnd) {
+                recentWindow.data.push(entry);
           } else {
-              recentWindow.data.push(entry);
+              oldWindow.data.push(entry);
           }
         })
 		// oldWindow = today-(2*ANALYSIS_WINDOW_IN_DAYS) to today-ANALYSIS_WINDOW_IN_DAYS
@@ -63,7 +69,7 @@ var compareWindows = function(recentW, oldW){
 	_.each(recentW, function(data, agencyName){
 		var oldRate = oldW[agencyName].closed;
 		var recentRate = recentW[agencyName].closed;
-		comparisonList.push({responsible_agency: agencyName, 
+		comparisonList.push({responsible_agency: agencyName,
 			changeInCloseRate: recentRate - oldRate,
 			recentCloseRate: recentRate,
 			oldCloseRate: oldRate})
