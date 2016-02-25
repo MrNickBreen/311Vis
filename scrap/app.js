@@ -1,10 +1,7 @@
-var ANALYSIS_WINDOW_IN_DAYS = 14;
+var ANALYSIS_WINDOW_IN_DAYS = 1;
 
 // Entry point to the entire app.
 var start = function(){
-
-
-
 	loadData().then(function(data){
 		console.log("drs2 ", data);
 		// TODONICK: split data into two arrays. 'first half and second half'
@@ -31,14 +28,10 @@ var start = function(){
 	Socrata API docs: https://dev.socrata.com/consumers/getting-started.html
 */
 var loadData = function(){
-	// TODO NICK:
-	//   get todays date
-	//   todays date - ANALYSIS_WINDOW_IN_DAYS*2
-	// turn into filter object and pass it in the request.
-
-	var todaysDate = moment().startOf('day'),
-        begginingOfAnalysisWindow = todaysDate.subtract(ANALYSIS_WINDOW_IN_DAYS*2, 'days'),
-        filters = "$where=(opened > \'2016-02-02\' AND opened < \'2016-02-24\') OR (closed > \'2016-02-02\' AND closed < \'2016-02-24\')" ; //TODO: add filters to request
+	var todaysMomentDate = moment().startOf('day'),
+        todaysDate = moment().startOf('day').format('YYYY-MM-DD'),
+        begginingOfAnalysisWindow = todaysMomentDate.subtract(ANALYSIS_WINDOW_IN_DAYS*2, 'days').format('YYYY-MM-DD'),
+        filters = "$where=(closed > \'"+begginingOfAnalysisWindow+"\' AND closed < \'"+todaysDate+"\') OR (opened > \'"+begginingOfAnalysisWindow+"\' AND opened < \'"+todaysDate+"\')";
 
 	return $.getJSON('https://data.sfgov.org/resource/vw6y-z8j6.json?$limit=50000&'+filters, function(data){
 		console.log('data', data);
