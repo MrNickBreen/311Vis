@@ -8,4 +8,18 @@
 	width: 100%;
 	display: block;
 	border-bottom: 1px dashed #333;
+	padding: 10px 0px;
+}
+
+.change-num {
+	float: right;
+	font-weight: bold;
+}
+
+.good {
+	color: #228b22;
+}
+
+.bad {
+	color: #b22222;
 }

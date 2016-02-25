@@ -1,4 +1,4 @@
-var ANALYSIS_WINDOW_IN_DAYS = 4,
+var ANALYSIS_WINDOW_IN_DAYS = 7,
     todaysDate = moment().startOf('day').format('YYYY-MM-DD'),
     begginingOfAnalysisWindow = moment().startOf('day').subtract((ANALYSIS_WINDOW_IN_DAYS*2)-1, 'days').format('YYYY-MM-DD'),
 
@@ -42,7 +42,7 @@ var start = function(){
 		console.log(comparisonList);
 		// compare return must already be sorted.
 		// comparisonList = [{agency: "blah ", change: 0.45, newValue: 12},...]
-		comparisonList = filterComparisonData(filterComparisonData);
+		comparisonList = filterComparisonData(comparisonList);
 		drawChart(comparisonList);
 	});
 };
@@ -67,17 +67,17 @@ var loadData = function(){
 var compareWindows = function(recentW, oldW){
 	var comparisonList = [];
 	_.each(recentW, function(data, agencyName){
-		var oldRate = oldW[agencyName].closed;
-		var recentRate = recentW[agencyName].closed;
+		var oldRate = oldW[agencyName] ? oldW[agencyName].closed : 0;
+		var recentRate = recentW[agencyName] ? recentW[agencyName].closed : 0;
 		comparisonList.push({responsible_agency: agencyName,
 			changeInCloseRate: recentRate - oldRate,
 			recentCloseRate: recentRate,
 			oldCloseRate: oldRate})
 	});
 
-	_.sortBy(comparisonList, function(agency){ return agency.changeInCloseRate; });
+	comparisonList = _.sortBy(comparisonList, function(agency){ return agency.changeInCloseRate; });
 
-	return comparisonList;
+	return comparisonList.reverse();
 }
 
 // Aggregate data to the responsible agency.
@@ -114,7 +114,11 @@ var filterComparisonData = function(comparisonList){
 
 var drawChart = function(comparisonList){
 	comparisonList.forEach(function(agency){
-		$('#leaderboard').add("<div class='agency'>" + agency.responsible_agency + "  " + agency.changeInCloseRate + "</div>")
+        var isGood = agency.changeInCloseRate > 0,
+            classColor = isGood ? 'good': 'bad';
+		$('#leaderboard').append("<div class='agency'>" + agency.responsible_agency + "  " +
+        "<span class='change-num "+classColor+"'>" +
+        agency.changeInCloseRate + "</span></div>")
 	});
 
 };
