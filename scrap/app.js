@@ -1,4 +1,4 @@
-var ANALYSIS_WINDOW_IN_DAYS = 6,
+var ANALYSIS_WINDOW_IN_DAYS = 2,
     todaysDate = moment().startOf('day').format('YYYY-MM-DD'),
     begginingOfAnalysisWindow = moment().startOf('day').subtract((ANALYSIS_WINDOW_IN_DAYS*2)-1, 'days').format('YYYY-MM-DD'),
 
@@ -29,8 +29,8 @@ var start = function(){
 		// recentWindow is today-ANALYSIS_WINDOW_IN_DAYS+1 to today
 		// NOTE: DONT DISTRUCT PARAMS PASSED INTO AGGREGATE FUNCTIONS.
 		// TODO: DAVID
-		aggregatedRecentWindow = aggregateData(recentWindow.data);
-		aggregatedOldWindow = aggregateData(oldWindow.data);
+		aggregatedRecentWindow = aggregateData(recentWindow);
+		aggregatedOldWindow = aggregateData(oldWindow);
 		console.log('aggregatedOldWindow', aggregatedOldWindow);
 		comparisonList = compareWindows(aggregatedRecentWindow, aggregatedOldWindow);
 		console.log(comparisonList);
@@ -50,7 +50,7 @@ var start = function(){
 var loadData = function(){
 	var filters = "$where=(closed > \'"+begginingOfAnalysisWindow+"\' AND closed < \'"+todaysDate+"\') OR (opened > \'"+begginingOfAnalysisWindow+"\' AND opened < \'"+todaysDate+"\')";
 
-	return $.getJSON('https://data.sfgov.org/resource/vw6y-z8j6.json?$limit=500&'+filters, function(data){
+	return $.getJSON('https://data.sfgov.org/resource/vw6y-z8j6.json?$limit=50000&'+filters, function(data){
 		console.log('data', data);
 		// do anything we want....but try to leave agregating out of the load function.
 	});
@@ -80,7 +80,7 @@ var aggregateData = function(dataWindow) {
 	// format: {"agency Name blah": {responsible_agency: "blah", newlyOpened:123, closed:456}}
 	var aggregatedData = {};
 
-	dataWindow.forEach(function(d){
+	dataWindow.data.forEach(function(d){
 		var agency = d.responsible_agency;
 		// first time we see this agency
 		if(!aggregatedData[agency]){
@@ -96,6 +96,13 @@ var aggregateData = function(dataWindow) {
 
 	return aggregatedData;
 }
+
+var drawChart = function(comparisonList){
+	comparisonList.forEach(function(agency){
+		$('#leaderboard').add("<div class='agency'>" + agency.responsible_agency + "  " + agency.changeInCloseRate + "</div>")
+	});
+
+};
 
 // ===== nick write below here
 
