@@ -36,7 +36,8 @@ var start = function(){
 		console.log(comparisonList);
 		// compare return must already be sorted.
 		// comparisonList = [{agency: "blah ", change: 0.45, newValue: 12},...]
-		//TODO: drawChart(comparisonList);
+		comparisonList = filterComparisonData(filterComparisonData);
+		drawChart(comparisonList);
 	});
 };
 
@@ -96,6 +97,14 @@ var aggregateData = function(dataWindow) {
 
 	return aggregatedData;
 }
+
+var filterComparisonData = function(comparisonList){
+	var MIN_CLOSES = 10;
+	var newList = _.reject(comparisonList, function(item){
+		return item.recentCloseRate < MIN_CLOSES || item.oldCloseRate < MIN_CLOSES;
+	});
+	return newList;
+};
 
 var drawChart = function(comparisonList){
 	comparisonList.forEach(function(agency){
