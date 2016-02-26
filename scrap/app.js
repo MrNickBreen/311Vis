@@ -74,7 +74,9 @@ var filterComparisonData = function(comparisonList){
 
 var drawChart = function(comparisonList){
     $('#leaderboard').html('');
-	comparisonList.forEach(function(agency){
+    var CHART_LENGTH = 10;
+	for(var i=0;i<CHART_LENGTH;i++){
+		var agency =comparisonList[i];
         var isGood = agency.changeInCloseRate > 0,
             classColor = isGood ? 'good': 'bad';
 
@@ -85,7 +87,7 @@ var drawChart = function(comparisonList){
 	        	prettyPercent(agency.changeInCloseRate) + "% "+        	  
         	"</span>" +
         "</div>")
-	});
+	}
 
 };
 
