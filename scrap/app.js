@@ -4,42 +4,45 @@ var ANALYSIS_WINDOW_IN_DAYS = 7,
 
     oldWindow = { 'start': begginingOfAnalysisWindow,
         'end': moment(begginingOfAnalysisWindow).add(ANALYSIS_WINDOW_IN_DAYS-1, 'd').format('YYYY-MM-DD'),
-        'data': []
+        'data': {}
     },
     recentWindow = { 'start': moment(oldWindow.end).add('1', 'd').format('YYYY-MM-DD'),
         'end': todaysDate,
-        'data': []
+        'data': {}
     };
 
 // Entry point to the entire app.
 var start = function(){
-	loadData().then(function(data){
-		console.log("drs2 ", data);
+	var aPromise = loadData(oldWindow);
+	var bPromise = loadData(recentWindow);
+	$.when(aPromise, bPromise).then(function(){
+		console.log("when drs2 ");
         // NOTE: split data into two arrays, an event can be opened in oldWindow
 		// and closed in recentWindow
-        $.each( data, function( i, entry ) {
-            var eventIsOpenedBetweenRecentStartAndEnd =
-                moment(entry.opened).isAfter(recentWindow.start) &&
-                moment(entry.opened).isBefore(recentWindow.end),
-                eventIsClosedBetweenRecentStartAndEnd =
-                moment(entry.closed).isAfter(recentWindow.start) &&
-                moment(entry.closed).isBefore(recentWindow.end);
-          if (eventIsOpenedBetweenRecentStartAndEnd ||
-            eventIsClosedBetweenRecentStartAndEnd) {
-                recentWindow.data.push(entry);
-          } else {
-              oldWindow.data.push(entry);
-          }
-        })
+        // $.each( data, function( i, entry ) {
+        //     var eventIsOpenedBetweenRecentStartAndEnd =
+        //         moment(entry.opened).isAfter(recentWindow.start) &&
+        //         moment(entry.opened).isBefore(recentWindow.end),
+        //         eventIsClosedBetweenRecentStartAndEnd =
+        //         moment(entry.closed).isAfter(recentWindow.start) &&
+        //         moment(entry.closed).isBefore(recentWindow.end);
+        //   if (eventIsOpenedBetweenRecentStartAndEnd ||
+        //     eventIsClosedBetweenRecentStartAndEnd) {
+        //         recentWindow.data.push(entry);
+        //   } else {
+        //       oldWindow.data.push(entry);
+        //   }
+        // })
 		// oldWindow = today-(2*ANALYSIS_WINDOW_IN_DAYS) to today-ANALYSIS_WINDOW_IN_DAYS
 		// recentWindow is today-ANALYSIS_WINDOW_IN_DAYS+1 to today
 		// NOTE: DONT DISTRUCT PARAMS PASSED INTO AGGREGATE FUNCTIONS.
 		// TODO: DAVID
-		aggregatedRecentWindow = aggregateData(recentWindow);
-		aggregatedOldWindow = aggregateData(oldWindow);
-		console.log('aggregatedOldWindow', aggregatedOldWindow);
-		comparisonList = compareWindows(aggregatedRecentWindow, aggregatedOldWindow);
-		console.log(comparisonList);
+		// aggregatedRecentWindow = aggregateData(recentWindow);
+		// aggregatedOldWindow = aggregateData(oldWindow);
+		console.log('oldWindow', oldWindow);
+		console.log('recentWindow', recentWindow);
+		comparisonList = compareWindows(recentWindow.data, oldWindow.data);
+		console.log('comaprisonList', comparisonList);
 		// compare return must already be sorted.
 		// comparisonList = [{agency: "blah ", change: 0.45, newValue: 12},...]
 		comparisonList = filterComparisonData(comparisonList);
@@ -54,14 +57,19 @@ var start = function(){
 	Data Sample in Sheet: https://docs.google.com/spreadsheets/d/1yGd2B7F8mlDg64L-uL3Byuxfxn1irl4ZLd0vETaq2GU/edit#gid=1562030977
 	Socrata API docs: https://dev.socrata.com/consumers/getting-started.html
 */
-var loadData = function(){
+var loadData = function(window){
 	// TODO: replace with calls like this:
-	//var closedFilter = "$select=COUNT(*),responsible_agency&$group=responsible_agency$where=(closed > \'"+begginingOfAnalysisWindow+"\' AND closed < \'"+todaysDate+"\')";
+	var closedFilter = "$select=COUNT(*),responsible_agency&$group=responsible_agency&$where=(closed > \'"+window.start+"\' AND closed < \'"+window.end+"\')";
 
-	var filters = "$where=(closed > \'"+begginingOfAnalysisWindow+"\' AND closed < \'"+todaysDate+"\')";//" OR (opened > \'"+begginingOfAnalysisWindow+"\' AND opened < \'"+todaysDate+"\')";
+	//var filters = "$where=(closed > \'"+begginingOfAnalysisWindow+"\' AND closed < \'"+todaysDate+"\')";//" OR (opened > \'"+begginingOfAnalysisWindow+"\' AND opened < \'"+todaysDate+"\')";
 
-	return $.getJSON('https://data.sfgov.org/resource/vw6y-z8j6.json?$limit=50000&'+filters, function(data){
-		console.log('data', data);
+	return $.getJSON('https://data.sfgov.org/resource/vw6y-z8j6.json?$limit=50000&' + closedFilter, function(data){
+		var map = {};
+		_.each(data, function(d){
+			map[d.responsible_agency] = {responsible_agency: d.responsible_agency, closed: d.count};
+		});
+
+		window.data = map;
 		// do anything we want....but try to leave agregating out of the load function.
 	});
 };
