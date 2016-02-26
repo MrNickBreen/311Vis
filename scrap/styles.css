@@ -1,5 +1,6 @@
 body {
-	width: 400px;
+	width: 600px;
+	max-width: 95%;
 	margin: 20px auto;
 	font: 18px/20px Arial, Helvetica, sans-serif;
 }
@@ -30,4 +31,12 @@ h2 {
 
 .bad {
 	color: #b22222;
+}
+
+.small {
+	font-size: 60%;
+}
+
+.loading-icon{
+	margin: 10px auto;
 }
