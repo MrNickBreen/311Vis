@@ -55,7 +55,10 @@ var start = function(){
 	Socrata API docs: https://dev.socrata.com/consumers/getting-started.html
 */
 var loadData = function(){
-	var filters = "$where=(closed > \'"+begginingOfAnalysisWindow+"\' AND closed < \'"+todaysDate+"\') OR (opened > \'"+begginingOfAnalysisWindow+"\' AND opened < \'"+todaysDate+"\')";
+	// TODO: replace with calls like this:
+	//var closedFilter = "$select=COUNT(*),responsible_agency&$group=responsible_agency$where=(closed > \'"+begginingOfAnalysisWindow+"\' AND closed < \'"+todaysDate+"\')";
+
+	var filters = "$where=(closed > \'"+begginingOfAnalysisWindow+"\' AND closed < \'"+todaysDate+"\')";//" OR (opened > \'"+begginingOfAnalysisWindow+"\' AND opened < \'"+todaysDate+"\')";
 
 	return $.getJSON('https://data.sfgov.org/resource/vw6y-z8j6.json?$limit=50000&'+filters, function(data){
 		console.log('data', data);
