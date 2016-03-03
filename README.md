@@ -11,8 +11,9 @@ python -m SimpleHTTPServer
 
 
 ## Bonus commands for dev console:
-- see all entries: `drawChart(filteredList, filteredList.length)`
-- adjust timespan to 14 days: `start(14);`
+- see all entries, but keep filter of min size: `drawChart(filteredList, filteredList.length)`
+- see all entries: `drawChart(comparisonList, comparisonList.length)`
+- adjust timespan to 16 days: `start(16);`
 
 
 ## Resources
