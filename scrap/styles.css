@@ -59,3 +59,21 @@ h2 {
 	color: #338;
 	margin: 0 2px;
 }
+
+.authors-container {
+	font-size: 90%;
+	margin-top:10px;
+}
+.code-for-sf-link {
+	position:relative;
+	top: -38px;
+	font-size: 90%;
+	text-decoration: none;
+}
+
+.code-for-sf-link img {
+	width: 50px;
+	top:19px;
+	position:relative;
+	font-weight: bold;
+}
