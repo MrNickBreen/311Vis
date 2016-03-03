@@ -1,19 +1,11 @@
-var ANALYSIS_WINDOW_IN_DAYS = 14,
+var ANALYSIS_WINDOW_IN_DAYS = 28,
+	CHART_LENGTH = 10,
 	MIN_CLOSES = 40, // both weeks must have at least this many closes to consider the department.
-    todaysDate = moment().startOf('day').format('YYYY-MM-DD'),
-    begginingOfAnalysisWindow = moment().startOf('day').subtract((ANALYSIS_WINDOW_IN_DAYS*2)-1, 'days').format('YYYY-MM-DD'),
-
-    oldWindow = { 'start': begginingOfAnalysisWindow,
-        'end': moment(begginingOfAnalysisWindow).add(ANALYSIS_WINDOW_IN_DAYS-1, 'd').format('YYYY-MM-DD'),
-        'data': {}
-    },
-    recentWindow = { 'start': moment(oldWindow.end).add('1', 'd').format('YYYY-MM-DD'),
-        'end': todaysDate,
-        'data': {}
-    };
+    todaysDate = moment().startOf('day').format('YYYY-MM-DD');
 
 // Entry point to the entire app.
-var start = function(){
+var start = function(windowSizeInDays){
+	resetApp(windowSizeInDays);
 	var aPromise = loadData(oldWindow);
 	var bPromise = loadData(recentWindow);
 	$.when(aPromise, bPromise).then(function(){
@@ -21,9 +13,22 @@ var start = function(){
 		// compare return must already be sorted.
 		// comparisonList type: [{agency: "blah ", change: 0.45, newValue: 12},...]
 		filteredList = filterComparisonData(comparisonList);
-		drawChart(filteredList);
+		drawChart(filteredList, CHART_LENGTH);
 	});
 };
+
+var resetApp = function(windowSizeInDays){
+    $('#leaderboard').html('<img src="loading.gif" class="loading-icon"/>');
+    begginingOfAnalysisWindow = moment().startOf('day').subtract((windowSizeInDays * 2)-1, 'days').format('YYYY-MM-DD')
+    oldWindow = { 'start': begginingOfAnalysisWindow,
+        'end': moment(begginingOfAnalysisWindow).add(windowSizeInDays - 1, 'd').format('YYYY-MM-DD'),
+        'data': {}
+    },
+    recentWindow = { 'start': moment(oldWindow.end).add('1', 'd').format('YYYY-MM-DD'),
+        'end': todaysDate,
+        'data': {}
+    };
+}
 
 
 /*
@@ -72,10 +77,9 @@ var filterComparisonData = function(comparisonList){
 	return newList;
 };
 
-var drawChart = function(comparisonList){
+var drawChart = function(comparisonList, chartLength){
     $('#leaderboard').html('');
-    var CHART_LENGTH = 10;
-	for(var i=0;i<CHART_LENGTH;i++){
+	for(var i=0;i< chartLength;i++){
 		var agency =comparisonList[i];
         var isGood = agency.changeInCloseRate > 0,
             classColor = isGood ? 'good': 'bad';
@@ -119,4 +123,4 @@ var UNUSED_aggregateData = function(dataWindow) {
 }
 
 
-start();
+start(ANALYSIS_WINDOW_IN_DAYS);
