@@ -18,7 +18,13 @@ var start = function(windowSizeInDays){
 };
 
 var resetApp = function(windowSizeInDays){
-    $('#leaderboard').html('<img src="loading.gif" class="loading-icon"/>');
+    // Update DOM
+    $('#leaderboard').html('<img src="loading.gif" class="loading-icon"/>');    
+	$(".currentNumDays").each(function(el){
+		$(this).text(windowSizeInDays);
+	});
+
+	// Reset variables.
     begginingOfAnalysisWindow = moment().startOf('day').subtract((windowSizeInDays * 2)-1, 'days').format('YYYY-MM-DD')
     oldWindow = { 'start': begginingOfAnalysisWindow,
         'end': moment(begginingOfAnalysisWindow).add(windowSizeInDays - 1, 'd').format('YYYY-MM-DD'),
@@ -122,5 +128,15 @@ var UNUSED_aggregateData = function(dataWindow) {
 	return aggregatedData;
 }
 
+// ui listener for num days buttons.
+$(".numDays").click(function(){
+	var currentNumDays = $(this).text();
+	start(currentNumDays);
+});
+
+// Helper function to quickly show all agencies.
+var showAllAgencies = function(){
+	drawChart(filteredList, filteredList.length);
+}
 
 start(ANALYSIS_WINDOW_IN_DAYS);

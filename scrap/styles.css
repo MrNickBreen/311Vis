@@ -13,6 +13,10 @@ h2 {
 	color: #999;
 }
 
+#leaderboard{
+	clear:both;
+}
+
 .agency {
 	width: 100%;
 	display: block;
@@ -39,4 +43,37 @@ h2 {
 
 .loading-icon{
 	margin: 10px auto;
+}
+
+.dayContainer{
+	float:right;
+	font-size: 80%;
+	border-bottom: 1px solid #999;
+	margin-bottom: 5px;
+}
+.numDays{
+	cursor: pointer;
+	padding: 3px;
+	border-radius: 3px;
+	background-color: #ddd;
+	color: #338;
+	margin: 0 2px;
+}
+
+.authors-container {
+	font-size: 90%;
+	margin-top:10px;
+}
+.code-for-sf-link {
+	position:relative;
+	top: -38px;
+	font-size: 90%;
+	text-decoration: none;
+}
+
+.code-for-sf-link img {
+	width: 50px;
+	top:19px;
+	position:relative;
+	font-weight: bold;
 }
