@@ -7,15 +7,15 @@ http://rawgit.com/MrNickBreen/311Vis/master/scrap/index.html
 
 ## Run locally
 *HTML Leaderboard*
-cd into scripts folder
-python -m SimpleHTTPServer
+- cd into scripts folder
+- python -m SimpleHTTPServer
 
 *Python script to make CSV training data set for BigML*
-cd into analysis folder
-pip install python-dateutil
-pip install pytz
-python main.py
-(notice that train_sample311.csv is created)
+- cd into analysis folder
+- pip install python-dateutil
+- pip install pytz
+- python main.py
+- (notice that train_sample311.csv is created)
 
 ## Bonus commands for dev console:
 - see all entries, but keep filter of min size: `drawChart(filteredList, filteredList.length)`
