@@ -6,9 +6,16 @@ http://rawgit.com/MrNickBreen/311Vis/master/scrap/index.html
 
 
 ## Run locally
+*HTML Leaderboard*
 cd into scripts folder
 python -m SimpleHTTPServer
 
+*Python script to make CSV training data set for BigML*
+cd into analysis folder
+pip install python-dateutil
+pip install pytz
+python main.py
+(notice that train_sample311.csv is created)
 
 ## Bonus commands for dev console:
 - see all entries, but keep filter of min size: `drawChart(filteredList, filteredList.length)`
@@ -29,7 +36,7 @@ python -m SimpleHTTPServer
 - 'Achievments / badges' for fastest responding department, best close rate, most engaged neighbourhood that reports the most, etc...
 - *Use BigML* to predict chance of a ticket being closed, and the biggest factors.
 - colour code neighbourhoods with open ticks (coloropleth)
-- open tickets preportional to income 
+- open tickets preportional to income
 - colour code census tracts (same number of people per area)
 
 
@@ -38,4 +45,4 @@ python -m SimpleHTTPServer
   - Neighbourhood geojson
   - cenus tract geojson
   - r script to agregate csv point data
-  - 
+  -
