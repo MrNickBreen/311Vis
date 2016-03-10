@@ -74,12 +74,13 @@
 	 * Socrata API docs: https://dev.socrata.com/consumers/getting-started.html
 	 */
 	var loadData = function(window){
-		var closedFilter = "$select=COUNT(*),responsible_agency&$group=responsible_agency&$where=(closed > '"+window.start+"' AND closed < '"+window.end+"')";
+		var department_col = cities[selectedCity].col_department;
+		var closedFilter = "$select=COUNT(*),"+department_col+"&$group="+department_col+"&$where=(closed > '"+window.start+"' AND closed < '"+window.end+"')";
 
 		return $.getJSON(cities[selectedCity].endpoint + "?$limit=50000&" + closedFilter, function(data){
 			var map = {};
 			_.each(data, function(d){
-				map[d.responsible_agency] = {responsible_agency: d.responsible_agency, closed: d.count};
+				map[d[department_col]] = {responsible_agency: d[department_col], closed: d.count};
 			});
 
 			window.data = map;
