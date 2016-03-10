@@ -142,7 +142,7 @@
 		var i, agency, isGood, classColor;
 	    $("#leaderboard").html("");
 
-		for(i=0; i< chartLength; i++){
+		for(i=0; i< Math.min(chartLength, comparisonList.length); i++){
 			agency = comparisonList[i];
 	        isGood = agency.changeInCloseRate > 0;
 	        classColor = isGood ? "good": "bad";
