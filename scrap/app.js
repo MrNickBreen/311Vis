@@ -7,15 +7,17 @@
 	    todaysDate = moment().startOf("day").format("YYYY-MM-DD"),
 	    cities = {
 	    	sanFrancisco: {
-	    		endpoint: 'https://data.sfgov.org/resource/vw6y-z8j6.json'},
-	    	 	col_closed: '',
-	    	 	col_department: 'responsible_agency',
-	    	edmenton: {
-	    	 	endpoint: 'https://data.edmonton.ca/resource/ukww-xkmj.json'},
+	    		endpoint: 'https://data.sfgov.org/resource/vw6y-z8j6.json',
+	    	 	col_closed: 'closed',
+	    	 	col_department: 'responsible_agency'
+			},
+	    	edmonton: {
+	    	 	endpoint: 'https://data.edmonton.ca/resource/ukww-xkmj.json',
 	    	 	col_closed: 'ticket_closed_date_time',
 	    	 	col_department: 'agency_responsible',
 	    	},
-	    	selectedCity = 'sanFrancisco',
+		},
+	    selectedCity = 'sanFrancisco',
 		recentWindow, oldWindow;
 
 
@@ -25,9 +27,7 @@
 	 * @param  int windowSizeInDays
 	 */
 	var start = function(windowSizeInDays){
-
-		// TODO: function that reads page url, gets .com/#CityName  set selectedCity = CityName
-
+		setCity();
 		resetApp(windowSizeInDays);
 		var aPromise = loadData(oldWindow),
 			bPromise = loadData(recentWindow);
@@ -36,6 +36,12 @@
 			filteredList = filterComparisonData(comparisonList);
 			drawChart(filteredList, CHART_LENGTH);
 		});
+	};
+
+	var setCity = function() {
+		if (window.location.hash.length > 0) {
+			selectedCity = window.location.hash.substring(1);
+		}
 	};
 
 	/**
@@ -74,8 +80,9 @@
 	 * Socrata API docs: https://dev.socrata.com/consumers/getting-started.html
 	 */
 	var loadData = function(window){
-		var department_col = cities[selectedCity].col_department;
-		var closedFilter = "$select=COUNT(*),"+department_col+"&$group="+department_col+"&$where=(closed > '"+window.start+"' AND closed < '"+window.end+"')";
+		var department_col = cities[selectedCity].col_department,
+			closed_col = cities[selectedCity].col_closed,
+			closedFilter = "$select=COUNT(*),"+department_col+"&$group="+department_col+"&$where=("+closed_col+" > '"+window.start+"' AND "+closed_col+" < '"+window.end+"')";
 
 		return $.getJSON(cities[selectedCity].endpoint + "?$limit=50000&" + closedFilter, function(data){
 			var map = {};
