@@ -23,8 +23,15 @@ http://rawgit.com/MrNickBreen/311Vis/master/scrap/index.html
 - adjust timespan to 16 days: `start(16);`
 
 
+
+## Steps to Redeploy
+### Sample redeploy to edmentond.
+https://data.edmonton.ca/Indicators/311-Explorer/ukww-xkmj
+edmenont data: https://data.edmonton.ca/resource/ukww-xkmj.json
+
+
 ## Resources
-- Data: https://data.sfgov.org/City-Infrastructure/Case-Data-from-San-Francisco-311-SF311-/vw6y-z8j6
+- SF Data: https://data.sfgov.org/City-Infrastructure/Case-Data-from-San-Francisco-311-SF311-/vw6y-z8j6
 - Sample API call: https://data.sfgov.org/resource/vw6y-z8j6.json?$limit=2000
 - Data Sample in Sheet: https://docs.google.com/spreadsheets/d/1yGd2B7F8mlDg64L-uL3Byuxfxn1irl4ZLd0vETaq2GU/edit#gid=1562030977
 - Socrata API docs: https://dev.socrata.com/consumers/getting-started.html

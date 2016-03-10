@@ -1,1 +1,5 @@
 all311.csv
+.DS_Store
+1000_train_all311.csv
+9000_train_all311.csv
+train_all311.csv

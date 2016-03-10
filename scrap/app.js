@@ -1,10 +1,23 @@
 // Wrapping everything to not leak into global namespace
 (function() {
+	// Pull out commonly edited files into config.
 	var ANALYSIS_WINDOW_IN_DAYS = 28,
 		CHART_LENGTH = 10,
 		MIN_CLOSES = 40, // both weeks must have at least this many closes to consider the department.
 	    todaysDate = moment().startOf("day").format("YYYY-MM-DD"),
+	    cities = {
+	    	sanFrancisco: {
+	    		endpoint: 'https://data.sfgov.org/resource/vw6y-z8j6.json'},
+	    	 	col_closed: '',
+	    	 	col_department: 'responsible_agency',
+	    	edmenton: {
+	    	 	endpoint: 'https://data.edmonton.ca/resource/ukww-xkmj.json'},
+	    	 	col_closed: 'ticket_closed_date_time',
+	    	 	col_department: 'agency_responsible',
+	    	},
+	    	selectedCity = 'sanFrancisco',
 		recentWindow, oldWindow;
+
 
 	/**
 	 * Entry point to the entire app. Loads the tickets in the window, compares,
@@ -12,6 +25,9 @@
 	 * @param  int windowSizeInDays
 	 */
 	var start = function(windowSizeInDays){
+
+		// TODO: function that reads page url, gets .com/#CityName  set selectedCity = CityName
+
 		resetApp(windowSizeInDays);
 		var aPromise = loadData(oldWindow),
 			bPromise = loadData(recentWindow);
@@ -60,7 +76,7 @@
 	var loadData = function(window){
 		var closedFilter = "$select=COUNT(*),responsible_agency&$group=responsible_agency&$where=(closed > '"+window.start+"' AND closed < '"+window.end+"')";
 
-		return $.getJSON("https://data.sfgov.org/resource/vw6y-z8j6.json?$limit=50000&" + closedFilter, function(data){
+		return $.getJSON(cities[selectedCity].endpoint + "?$limit=50000&" + closedFilter, function(data){
 			var map = {};
 			_.each(data, function(d){
 				map[d.responsible_agency] = {responsible_agency: d.responsible_agency, closed: d.count};
