@@ -3,18 +3,19 @@
 	// Pull out commonly edited files into config.
 	var ANALYSIS_WINDOW_IN_DAYS = 28,
 		CHART_LENGTH = 10,
-		MIN_CLOSES = 40, // both weeks must have at least this many closes to consider the department.
 	    todaysDate = moment().startOf("day").format("YYYY-MM-DD"),
 	    cities = {
 	    	sanFrancisco: {
 	    		endpoint: 'https://data.sfgov.org/resource/vw6y-z8j6.json',
 	    	 	col_closed: 'closed',
-	    	 	col_department: 'responsible_agency'
+	    	 	col_department: 'responsible_agency',
+	    	 	min_closed_tickets: 40 // min tickets to be inclulded in the list.
 			},
 	    	edmonton: {
 	    	 	endpoint: 'https://data.edmonton.ca/resource/ukww-xkmj.json',
 	    	 	col_closed: 'ticket_closed_date_time',
 	    	 	col_department: 'agency_responsible',
+	    	 	min_closed_tickets: 5 // min tickets to be inclulded in the list.
 	    	},
 		},
 	    selectedCity = 'sanFrancisco',
@@ -124,11 +125,11 @@
 	/**
 	 * Filters out agencies that have too few close rates
 	 * @param  {[type]} comparisonList [array of comparison data]
-	 * @return {[type]}                [array of comaprison data with closer rates above MIN_CLOSES]
+	 * @return {[type]}                [array of comaprison data with closer rates above min_closed_tickets]
 	 */
 	var filterComparisonData = function(comparisonList){
 		var newList = _.reject(comparisonList, function(item){
-			return item.recentCloseRate < MIN_CLOSES || item.oldCloseRate < MIN_CLOSES;
+			return item.recentCloseRate < cities[selectedCity].min_closed_tickets || item.oldCloseRate < cities[selectedCity].min_closed_tickets;
 		});
 		return newList;
 	};
@@ -149,9 +150,9 @@
 
 			$("#leaderboard").append("<div class='agency'>" +
 				agency.responsible_agency + "  " +
-	        	"<span class='change-num "+classColor+"'>" +
-		        	"<span class='small'>"+agency.oldCloseRate + " -> " + agency.recentCloseRate+"</span> "+
-		        	prettyPercent(agency.changeInCloseRate) + "% "+
+	        	"<span class='change-num " + classColor + "'>" +
+		        	"<span class='small'>" + agency.oldCloseRate + " -> " + agency.recentCloseRate+"</span> "+
+		        	prettyPercent(agency.changeInCloseRate) + "% " +
 	        	"</span>" +
 	        "</div>")
 		}
