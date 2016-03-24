@@ -7,7 +7,7 @@ http://rawgit.com/MrNickBreen/311Vis/master/scrap/index.html
 
 ## Run locally
 *HTML Leaderboard*
-- cd into scripts folder
+- cd into scraps folder
 - python -m SimpleHTTPServer
 
 *Python script to make CSV training data set for BigML*
