@@ -17,7 +17,15 @@
 	    	 	col_department: 'agency_responsible',
 	    	 	min_closed_tickets: 5 // min tickets to be inclulded in the list.
 	    	},
+
+	    	newYork: {
+	    		endpoint: 'https://data.cityofnewyork.us/resource/erm2-nwe9.json',
+	    		col_closed: 'closed_date',
+	    		col_department: 'agency_name',
+	    		min_closed_tickets: 25// min tickets to be inclulded in the list.
+		    	}
 		},
+
 	    selectedCity = 'sanFrancisco',
 		recentWindow, oldWindow;
 
